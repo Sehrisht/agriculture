@@ -1,0 +1,61 @@
+---
+title: "What Drove Crop Production Growth in Pakistan and India: Yield Improvement or Land Expansion?"
+author: "Shrish Tariq"
+format: html
+execute: 
+  echo: false
+---
+
+```{r}
+library(tidyverse)
+install.packages("ggplot2")
+library(ggplot2)
+library(scales)
+```
+
+Loading agriculture dataset
+```{r}
+agri_data <- read.csv(
+  "data/agriculture.csv",
+  fileEncoding = "UTF-8-BOM"
+)
+agri_data
+```
+
+Exploring agriculture dataset
+
+```{r}
+library(dplyr)
+library(tidyr)
+
+crop_data <- agri_data %>%
+  filter(
+    Area %in% c("Pakistan", "India"),
+    Item %in% c("Wheat", "Rice", "Maize (corn)"),
+    Element %in% c("Area harvested", "Yield", "Production"),
+    !is.na(Value)
+  ) %>%
+  mutate(
+    Item = recode(Item, "Maize (corn)" = "Maize")
+  ) %>%
+  select(Area, Item, Year, Element, Value) %>%
+  pivot_wider(
+    names_from = Element,
+    values_from = Value
+  ) %>%
+  rename(
+    country = Area,
+    crop = Item,
+    year = Year,
+    area_ha = `Area harvested`,
+    yield_kg_ha = Yield,
+    production_t = Production
+  ) %>%
+  arrange(country, crop, year)
+```
+```{r}
+head(agri_data)
+str(agri_data)
+dim(agri_data)
+names(agri_data)
+```
