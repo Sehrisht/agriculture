@@ -1,0 +1,13 @@
+---
+title: "Agriculture Data Analysis"
+subtitle: "Crop production and yield trends in Pakistan and India"
+---
+
+## About this project
+
+This project uses FAOSTAT data to examine wheat, rice, and maize production in Pakistan and India between 2011 and 2023.
+
+The analysis investigates whether production growth resulted primarily from increased crop yield or expansion of harvested land.
+
+[View the complete analysis](analysis.qmd)
+
