@@ -102,4 +102,7 @@ library(ggplot2)
 indexed_data <- crop_data %>% group_by(country, crop) %>% mutate(production_2011 = production_t[year == 2011][1], production_index = (production_t / production_2011) * 100
 ) %>%
     ungroup()
+indexed_data %>%
+  filter(year == 2011) %>%
+  select(country, crop, year, production_index)
 ```
