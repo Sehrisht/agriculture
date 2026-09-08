@@ -336,3 +336,108 @@ ggsave(
   dpi = 300
 )
 ```
+
+Which crop had the most variable yield?
+$$ CV= standard deviation / mean ​×100 $$
+```{r}
+
+yield_variability <- crop_data %>%
+  group_by(country, crop) %>%
+  summarise(
+    mean_yield = mean(yield_kg_ha),
+    sd_yield = sd(yield_kg_ha),
+    yield_cv_pct = 100 * sd_yield / mean_yield,
+    .groups = "drop"
+  )
+
+p6 <- ggplot(
+  yield_variability,
+  aes(x = crop, y = yield_cv_pct, fill = country)
+) +
+  geom_col(
+    position = position_dodge(width = 0.75),
+    width = 0.65
+  ) +
+  geom_text(
+    aes(label = paste0(round(yield_cv_pct, 1), "%")),
+    position = position_dodge(width = 0.75),
+    vjust = -0.4,
+    size = 3.5
+  ) +
+  scale_fill_manual(values = country_colours) +
+  scale_y_continuous(
+    labels = label_number(suffix = "%"),
+    expand = expansion(mult = c(0, 0.12))
+  ) +
+  labs(
+    title = "Which crop experienced the greatest yield variability?",
+    subtitle = "Coefficient of variation, 2011–2023",
+    x = NULL,
+    y = "Yield coefficient of variation",
+    fill = "Country",
+    caption = "Source: FAOSTAT"
+  )
+
+p6
+
+ggsave(
+  "figures/06_yield_variability.png",
+  p6,
+  width = 9,
+  height = 6,
+  dpi = 300
+)
+```
+
+Which years experienced the largest production increases or declines?
+
+```{r}
+annual_changes <- crop_data %>%
+  group_by(country, crop) %>%
+  arrange(year, .by_group = TRUE) %>%
+  mutate(
+    production_change_pct =
+      100 * (production_t / lag(production_t) - 1),
+    series = paste(country, crop, sep = " — ")
+  ) %>%
+  ungroup() %>%
+  filter(!is.na(production_change_pct))
+
+p7 <- ggplot(
+  annual_changes,
+  aes(
+    x = year,
+    y = series,
+    fill = production_change_pct
+  )
+) +
+  geom_tile(colour = "white", linewidth = 0.4) +
+  scale_fill_gradient2(
+    low = "#a7f111",
+    mid = "white",
+    high = "#72094c",
+    labels = label_number(suffix = "%")
+  ) +
+  scale_x_continuous(breaks = 2012:2023) +
+  labs(
+    title = "Annual changes in crop production",
+    subtitle = "Red indicates decline; blue indicates growth",
+    x = NULL,
+    y = NULL,
+    fill = "Annual change",
+    caption = "Source: FAOSTAT"
+  ) +
+  theme(
+    axis.text.x = element_text(angle = 45, hjust = 1)
+  )
+
+p7
+
+ggsave(
+  "figures/07_annual_change_heatmap.png",
+  p7,
+  width = 11,
+  height = 6,
+  dpi = 300
+)
+```
