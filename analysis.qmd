@@ -193,3 +193,101 @@ growth_summary <- crop_data %>%
 
 print(growth_summary)
 ```
+
+```{r}
+growth_long <- growth_summary %>%
+  pivot_longer(
+    cols = ends_with("_change_pct"),
+    names_to = "measure",
+    values_to = "change_pct"
+  ) %>%
+  mutate(
+    measure = recode(
+      measure,
+      area_change_pct = "Harvested area",
+      yield_change_pct = "Yield",
+      production_change_pct = "Production"
+    ),
+    measure = factor(
+      measure,
+      levels = c("Harvested area", "Yield", "Production")
+    )
+  )
+
+p3 <- ggplot(
+  growth_long,
+  aes(x = crop, y = change_pct, fill = measure)
+) +
+  geom_col(
+    position = position_dodge(width = 0.8),
+    width = 0.7
+  ) +
+  geom_hline(yintercept = 0, colour = "grey40") +
+  facet_wrap(~country) +
+  scale_fill_manual(
+    values = c(
+      "Harvested area" = "#80B1D3",
+      "Yield" = "#B3DE69",
+      "Production" = "#FB8072"
+    )
+  ) +
+  scale_y_continuous(labels = label_number(suffix = "%")) +
+  labs(
+    title = "What drove production growth?",
+    subtitle = "Percentage change between 2011 and 2023",
+    x = NULL,
+    y = "Change (%)",
+    fill = NULL,
+    caption = "Source: FAOSTAT"
+  )
+
+p3
+
+ggsave(
+  "figures/03_growth_drivers.png",
+  p3,
+  width = 10,
+  height = 6,
+  dpi = 300
+)
+```
+
+How have crop yields changed in the two countries?
+
+```{r}
+library(dplyr)
+library(ggplot2)
+
+country_colours <- c(
+  "Pakistan" = "#D97706",
+  "India" = "#2563EB"
+)
+p4 <- ggplot(
+  crop_data,
+  aes(x = year, y = yield_kg_ha, colour = country)
+) +
+  geom_line(linewidth = 1.1) +
+  geom_point(size = 1.8) +
+  facet_wrap(~crop, scales = "free_y") +
+  scale_colour_manual(values = country_colours) +
+  scale_x_continuous(breaks = seq(2011, 2023, 2)) +
+  scale_y_continuous(labels = label_comma()) +
+  labs(
+    title = "Crop-yield trends in Pakistan and India",
+    subtitle = "Yield represents output per hectare",
+    x = NULL,
+    y = "Yield (kg/ha)",
+    colour = "Country",
+    caption = "Source: FAOSTAT"
+  )
+
+p4
+
+ggsave(
+  "figures/04_yield_trends.png",
+  p4,
+  width = 11,
+  height = 6,
+  dpi = 300
+)
+```
