@@ -106,3 +106,90 @@ indexed_data %>%
   filter(year == 2011) %>%
   select(country, crop, year, production_index)
 ```
+
+```{r}
+ggplot(
+  indexed_data,
+  aes(
+    x = year,
+    y = production_index,
+    color = country,
+    linetype = country,
+    group = country
+  )
+) +
+  geom_hline(
+    yintercept = 100,
+    color = "grey50",
+    linetype = "dotted"
+  ) +
+  geom_line(linewidth = 1.1) +
+  geom_point(size = 2) +
+  facet_wrap(~ crop, nrow = 1) +
+  scale_color_manual(
+    values = c(
+      "India" = "#2563EB",
+      "Pakistan" = "#D97706"
+    )
+  ) +
+  scale_x_continuous(
+    breaks = seq(2011, 2023, by = 2)
+  ) +
+  labs(
+    title = "Indexed Crop Production in Pakistan and India",
+    subtitle = "Each crop–country series is set to 100 in 2011",
+    x = "Year",
+    y = "Production index (2011 = 100)",
+    color = "Country",
+    linetype = "Country",
+    caption = "Source: FAOSTAT"
+  ) +
+  theme_minimal(base_size = 12) +
+  theme(
+    legend.position = "bottom",
+    panel.grid.minor = element_blank(),
+    strip.text = element_text(face = "bold")
+  )
+```
+
+Growth ranking of Pakistan and India in terms of economic crops
+```{r}
+growth_ranking <- indexed_data %>%
+  group_by(country, crop) %>%
+  slice_max(year, n = 1, with_ties = FALSE) %>%
+  ungroup() %>%
+  transmute(
+    country,
+    crop,
+    final_year = year,
+    final_index = round(production_index, 1),
+    growth_percent = round(production_index - 100, 1)
+  ) %>%
+  arrange(desc(growth_percent))
+
+growth_ranking
+```
+
+Was production growth driven by better yields or expansion of cultivated area?
+
+```{r}
+growth_summary <- crop_data %>%
+  group_by(country, crop) %>%
+  summarise(
+    area_change_pct = 100 * (
+      last(area_ha, order_by = year) /
+        first(area_ha, order_by = year) - 1
+    ),
+    yield_change_pct = 100 * (
+      last(yield_kg_ha, order_by = year) /
+        first(yield_kg_ha, order_by = year) - 1
+    ),
+    production_change_pct = 100 * (
+      last(production_t, order_by = year) /
+        first(production_t, order_by = year) - 1
+    ),
+    .groups = "drop"
+  )
+
+print(growth_summary)
+```

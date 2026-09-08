@@ -193,6 +193,43 @@ The following object is masked from 'package:readr':
 </div>
 </div>
 </div>
+<p>Which crop-country combination experienced the fastest production growth?</p>
+<div class="cell">
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 6 × 4
+  country  crop   year production_index
+  &lt;chr&gt;    &lt;chr&gt; &lt;int&gt;            &lt;dbl&gt;
+1 India    Maize  2011              100
+2 India    Rice   2011              100
+3 India    Wheat  2011              100
+4 Pakistan Maize  2011              100
+5 Pakistan Rice   2011              100
+6 Pakistan Wheat  2011              100</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="analysis_files/figure-html/unnamed-chunk-8-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>Growth ranking of Pakistan and India in terms of economic crops</p>
+<div class="cell">
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 6 × 5
+  country  crop  final_year final_index growth_percent
+  &lt;chr&gt;    &lt;chr&gt;      &lt;int&gt;       &lt;dbl&gt;          &lt;dbl&gt;
+1 Pakistan Maize       2023        224.          124. 
+2 India    Maize       2023        170.           69.9
+3 Pakistan Rice        2023        160            60  
+4 India    Rice        2023        128.           28.1
+5 India    Wheat       2023        127.           27.3
+6 Pakistan Wheat       2023        112.           11.7</code></pre>
+</div>
+</div>
 
 </main>
 <!-- /main column -->
