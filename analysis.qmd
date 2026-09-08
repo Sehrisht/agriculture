@@ -291,3 +291,48 @@ ggsave(
   dpi = 300
 )
 ```
+
+Which country had the higher yield in 2023?
+
+```{r}
+yield_2023 <- crop_data %>%
+  filter(year == 2023)
+
+p5 <- ggplot(
+  yield_2023,
+  aes(x = crop, y = yield_kg_ha, fill = country)
+) +
+  geom_col(
+    position = position_dodge(width = 0.75),
+    width = 0.65
+  ) +
+  geom_text(
+    aes(label = comma(round(yield_kg_ha))),
+    position = position_dodge(width = 0.75),
+    vjust = -0.4,
+    size = 3.5
+  ) +
+  scale_fill_manual(values = country_colours) +
+  scale_y_continuous(
+    labels = label_comma(),
+    expand = expansion(mult = c(0, 0.12))
+  ) +
+  labs(
+    title = "Crop-yield comparison in 2023",
+    subtitle = "Pakistan recorded a notably high maize yield",
+    x = NULL,
+    y = "Yield (kg/ha)",
+    fill = "Country",
+    caption = "Source: FAOSTAT"
+  )
+
+p5
+
+ggsave(
+  "figures/05_yield_comparison_2023.png",
+  p5,
+  width = 9,
+  height = 6,
+  dpi = 300
+)
+```
