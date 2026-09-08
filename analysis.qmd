@@ -19,7 +19,6 @@ agri_data <- read.csv(
   "data/agriculture.csv",
   fileEncoding = "UTF-8-BOM"
 )
-agri_data
 ```
 
 Exploring agriculture dataset
@@ -58,4 +57,49 @@ head(agri_data)
 str(agri_data)
 dim(agri_data)
 names(agri_data)
+```
+
+```{r}
+head(crop_data)
+dim(crop_data)
+
+crop_data %>%
+  count(country, crop)
+```
+
+How have wheat, rice, and maize production trends differed between Pakistan and India since 2011?
+```{r}
+library(ggplot2)
+library(scales)
+
+ggplot(
+  crop_data,
+  aes(x = year, y = production_t, color = country)
+) +
+  geom_line(linewidth = 1.1) +
+  geom_point(size = 2) +
+  facet_wrap(~ crop, scales = "free_y") +
+  scale_y_continuous(
+    labels = label_number(scale = 1e-6, suffix = "M")
+  ) +
+  labs(
+    title = "Crop Production Trends in Pakistan and India",
+    subtitle = "Wheat, rice and maize production, 2011–2023",
+    x = "Year",
+    y = "Production (million tonnes)",
+    color = "Country",
+    caption = "Source: FAOSTAT"
+  ) +
+  theme_minimal(base_size = 12) +
+  theme(legend.position = "bottom")
+```
+
+Which crop-country combination experienced the fastest production growth?
+
+```{r}
+library(dplyr)
+library(ggplot2)
+indexed_data <- crop_data %>% group_by(country, crop) %>% mutate(production_2011 = production_t[year == 2011][1], production_index = (production_t / production_2011) * 100
+) %>%
+    ungroup()
 ```
